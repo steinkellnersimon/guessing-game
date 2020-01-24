@@ -9,9 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
-import java.util.stream.StreamSupport;
 
 @SpringBootApplication
 public class GuessingGameApplication implements CommandLineRunner {
@@ -79,13 +78,10 @@ public class GuessingGameApplication implements CommandLineRunner {
         System.out.println("| Rank | Name             | Attempts | Time  | Score |");
         System.out.println("+------+------------------+----------+-------+-------+");
 
-        Score[] leaderboard = StreamSupport.stream(scores.findAll().spliterator(), false)
-                .sorted(Comparator.comparing(Score::getScore))
-                .limit(10)
-                .toArray(Score[]::new);
+        List<Score> leaderboard = scores.findTop10ByOrderByScore();
 
-        for (int i = 0; i < leaderboard.length; i++) {
-            Score current = leaderboard[i];
+        for (int i = 0; i < leaderboard.size(); i++) {
+            Score current = leaderboard.get(i);
             String name = current.getPlayerName().length() >= 16 ? current.getPlayerName().substring(0, 16) : current.getPlayerName();
 
             System.out.printf("| %4d | %-16s | %8d | %5.1f | %5d |%s",
